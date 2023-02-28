@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 
 	"github.com/spotbun/filedrop/pkg/config"
 )
@@ -36,6 +37,15 @@ func main() {
 	http.HandleFunc("/upload", handleUpload)
 
 	log.Println("Server started on http://0.0.0.0:80")
+
+	// handle ctrl+c
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		<-c
+		log.Println("Shutting down server...")
+		os.Exit(0)
+	}()
 
 	// start server
 	log.Fatal(http.ListenAndServe(":80", nil))
