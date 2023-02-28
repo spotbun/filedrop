@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -18,6 +19,9 @@ import (
 //go:embed web/templates
 var templatesFS embed.FS
 
+//go:embed web/assets
+var assetsFS embed.FS
+
 func main() {
 	log.Println("Starting server...")
 
@@ -26,6 +30,10 @@ func main() {
 		log.Fatal(fmt.Errorf("error creating uploads directory: %w", err))
 		return
 	}
+
+	// serve assets
+	assets, err := fs.Sub(assetsFS, "web/assets")
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.FS(assets))))
 
 	// parse templates from file system
 	templates := template.Must(template.ParseFS(templatesFS, "web/templates/*.gohtml"))

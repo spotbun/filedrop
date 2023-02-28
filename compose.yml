@@ -1,0 +1,9 @@
+version: "3.7"
+
+services:
+  filedrop:
+    build: .
+    ports:
+      - "80:80"
+    volumes:
+      - ./uploads:/uploads
