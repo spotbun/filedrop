@@ -21,31 +21,31 @@
             top: 50%;
             transform: translateY(-50%);
         }
+
+        .center {
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 <main class="container">
-    <h1>{{ .Title }}</h1>
     <article>
-        <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);" onclick="openFileSelector();">
-            <p class="drop-zone-text">Drag files here</p>
+        <div class="container">
+            <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);"
+                 onclick="openFileSelector();">
+                <p class="drop-zone-text">Drag files here</p>
+            </div>
+            <input type="file" id="file_selector" multiple>
         </div>
-        <input type="file" id="file_selector" multiple>
         <br>
-        <progress value="25" max="100"></progress>
+        <progress hidden id="progress" value="25" max="100"></progress>
         <br>
-        <button onclick="">Upload</button>
+        <button onclick="uploadFiles()">Upload</button>
     </article>
-    <footer>
-        <p>Filedrop by Spotbun</p>
-    </footer>
 </main>
 </body>
 
 <script>
-    // file storage
-    let files = [];
-
     function dropHandler(ev) {
         console.log('File(s) dropped');
         ev.preventDefault();
@@ -76,26 +76,56 @@
     }
 
     function uploadFiles() {
+        // abort if files is empty
+        if (document.getElementById('file_selector').files.length === 0) {
+            return;
+        }
+
         // upload files from "file_selector" to "/upload" via post
         // show progress in the porogress bar
 
         // make formDate object
         const formData = new FormData();
-        [...ev.dataTransfer.files].forEach((file, i) => {
+        [...document.getElementById('file_selector').files].forEach((file, i) => {
             formData.append(`file${i}`, file);
         });
 
-        fetch('/upload', {
-            method: 'POST',
-            body: formData
-        }).then(response => {
-            console.log(response);
-            // temporarily change button text to "Uploaded"
-            document.querySelector('button').innerText = 'Uploaded!';
-            setTimeout(() => {
-                document.querySelector('button').innerText = 'Upload';
-            }, 2000);
-        });
+        // make request
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/upload');
+        // show progressbar
+        document.querySelector('#progress').hidden = false;
+        xhr.upload.onprogress = function (e) {
+            if (e.lengthComputable) {
+                const percentComplete = (e.loaded / e.total) * 100;
+                console.log(percentComplete);
+                document.querySelector('#progress').value = percentComplete;
+            }
+        };
+
+        xhr.onload = function () {
+            if (this.status === 200) {
+                console.log('Upload complete');
+                const buttonColor = document.querySelector('button').style.backgroundColor;
+                document.querySelector('button').style.backgroundColor = 'green';
+                document.querySelector('button').innerText = 'Uploaded!';
+                setTimeout(() => {
+                    document.querySelector('button').style.backgroundColor = buttonColor;
+                    document.querySelector('button').innerText = 'Upload';
+                }, 3000);
+            } else {
+                console.error('Upload failed');
+            }
+
+            // hide and reset progressbar
+            document.querySelector('#progress').hidden = true;
+            document.querySelector('#progress').value = 0;
+
+            // reset file_selector
+            document.getElementById('file_selector').value = '';
+        };
+
+        xhr.send(formData);
     }
 </script>
 

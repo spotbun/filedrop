@@ -35,6 +35,8 @@ func main() {
 	// upload handler
 	http.HandleFunc("/upload", handleUpload)
 
+	log.Println("Server started on http://0.0.0.0:80")
+
 	// start server
 	log.Fatal(http.ListenAndServe(":80", nil))
 }
