@@ -8,7 +8,7 @@
 <a href="https://github.com/spotbun/filedrop/blob/main/LICENCE"><img alt="GitHub" src="https://img.shields.io/github/license/spotbun/filedrop?style=for-the-badge"></a>
 <br>
 <br>
-<img alt="Screenshot" width="750" src="https://user-images.githubusercontent.com/31022056/221932050-88935d5c-1f53-400d-9dc0-61b29b0ab6cf.png">
+<img alt="Screenshot" width="750" src="https://user-images.githubusercontent.com/31022056/221944497-bb5b3e76-ebec-4257-b864-d3c11698d47b.png">
 </p>
 
 
