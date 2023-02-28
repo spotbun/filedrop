@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="Simple file drop server.">
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@1.*/css/pico.min.css">
+    <title>{{ .Title }}</title>
+    <style>
+        #drop_zone {
+            border: 3px dashed gray;
+            width: 100%;
+            height: 200px;
+        }
+
+        .drop-zone-text {
+            text-align: center;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body>
+<main class="container">
+    <h1>{{ .Title }}</h1>
+    <article>
+        <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);" onclick="openFileSelector();">
+            <p class="drop-zone-text">Drag files here</p>
+        </div>
+        <input type="file" id="file_selector" multiple>
+        <br>
+        <progress value="25" max="100"></progress>
+        <br>
+        <button onclick="">Upload</button>
+    </article>
+    <footer>
+        <p>Filedrop by Spotbun</p>
+    </footer>
+</main>
+</body>
+
+<script>
+    // file storage
+    let files = [];
+
+    function dropHandler(ev) {
+        console.log('File(s) dropped');
+        ev.preventDefault();
+
+        if (ev.dataTransfer.items) {
+            [...ev.dataTransfer.items].forEach((item, i) => {
+                if (item.kind === 'file') {
+                    const file = item.getAsFile();
+                    console.log(`… file[${i}].name = ${file.name}`);
+                }
+            });
+        } else {
+            [...ev.dataTransfer.files].forEach((file, i) => {
+                console.log(`… file[${i}].name = ${file.name}`);
+            });
+        }
+
+        // add files to file_selector
+        document.getElementById('file_selector').files = ev.dataTransfer.files;
+    }
+
+    function dragOverHandler(ev) {
+        ev.preventDefault();
+    }
+
+    function openFileSelector() {
+        document.getElementById('file-selector').click();
+    }
+
+    function uploadFiles() {
+        // upload files from "file_selector" to "/upload" via post
+        // show progress in the porogress bar
+
+        // make formDate object
+        const formData = new FormData();
+        [...ev.dataTransfer.files].forEach((file, i) => {
+            formData.append(`file${i}`, file);
+        });
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            console.log(response);
+            // temporarily change button text to "Uploaded"
+            document.querySelector('button').innerText = 'Uploaded!';
+            setTimeout(() => {
+                document.querySelector('button').innerText = 'Upload';
+            }, 2000);
+        });
+    }
+</script>
+
+</html>
