@@ -73,7 +73,7 @@ func renderTemplate(templates *template.Template, name string, data any) http.Ha
 // File names should be prefixed with their hash.
 func handleUpload(w http.ResponseWriter, r *http.Request) {
 	// parse multipart form
-	err := r.ParseMultipartForm(32 << 20)
+	err := r.ParseMultipartForm(32 << 30)
 	if err != nil {
 		log.Println(fmt.Errorf("error parsing multipart form: %w", err))
 		return
